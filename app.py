@@ -224,7 +224,8 @@ if __name__ == '__main__':
     print("Đang khởi động ứng dụng...")
     logging.info("Khởi động server Flask...")
     try:
-        app.run(host="0.0.0.0", port=5000)
+        app.run(host='0.0.0.0', port=5000, debug=True)
+
     except Exception as e:
         logging.error(f"Lỗi khi chạy server: {e}")
         print(f"Lỗi khi chạy server: {str(e)}")
