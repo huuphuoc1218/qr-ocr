@@ -2,7 +2,6 @@ from flask import Flask, render_template, Response, request, send_from_directory
 import cv2
 import os
 import datetime
-import winsound
 import logging
 import time
 import pytesseract
@@ -130,8 +129,6 @@ def capture():
             logging.error(f"Không thể lưu ảnh vào {filepath}")
             return jsonify({"error": "Không thể lưu ảnh"}), 500
         logging.info(f"Đã lưu ảnh tại {filepath}")
-
-        winsound.Beep(1000, 300)
 
         ocr_result = perform_ocr(filepath)
         logging.info(f"Kết quả OCR: {ocr_result}")
