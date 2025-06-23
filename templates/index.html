@@ -2,70 +2,103 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Camera Capture</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
-    <h1>Ứng dụng OCR + QR</h1>
-    <div class="nd">
-      <div class="left">
-        <!-- Video Stream -->
-        <img id="video" src="{{ url_for('video') }}" alt="Video Stream" />
-        <!-- Capture Button -->
-        <br />
-        <button onclick="captureImage()">Chụp ảnh</button>
-        <div class="gallery-link">
-          <a href="{{ url_for('gallery') }}">Xem gallery</a>
-        </div>
-        <!-- Status message -->
-        <div id="status">Chưa thực hiện thao tác nào</div>
-      </div>
+    <header class="app-header">
+      <h1 class="app-title">Ứng dụng OCR + QR</h1>
+    </header>
 
-      <div class="right">
-        <!-- OCR + QR result -->
-        <div id="result-container">
-          <h2>Kết quả OCR</h2>
-          <p><label>Văn bản OCR:</label> <span id="result_text">-</span></p>
+    <main class="container main-content">
+      <div class="grid-2cols">
+        <!-- Left Column - Video Stream -->
+        <div class="flex-col">
+          <div class="video-container">
+            <img id="video" src="{{ url_for('video') }}" alt="Video Stream" />
+            <div class="video-overlay">Live Camera Feed</div>
+          </div>
+
+          <div class="control-panel">
+            <button onclick="captureImage()" class="btn btn-primary">
+              <span class="icon">📷</span>
+              Chụp ảnh
+            </button>
+
+            <a href="{{ url_for('gallery') }}" class="btn btn-secondary">
+              <span class="icon">🖼️</span>
+              Xem gallery
+            </a>
+
+            <div id="status" class="status-message">
+              Chưa thực hiện thao tác nào
+            </div>
+          </div>
         </div>
-        <div id="result-container">
-          <h2>Kết quả QR</h2>
-          <p><label>Dữ liệu QR Code:</label> <span id="qr_text">-</span></p>
+
+        <!-- Right Column - Results -->
+        <!-- Thay thế phần results-section cũ bằng đoạn này -->
+        <div class="results-container">
+          <div class="result-card">
+            <h2>Kết quả OCR</h2>
+            <div class="result-field">
+              <label>Văn bản OCR:</label>
+              <span id="result_text" class="result-value">-</span>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <h2>Kết quả QR</h2>
+            <div class="result-field">
+              <label>Dữ liệu QR Code:</label>
+              <span id="qr_text" class="result-value">-</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <script>
       async function captureImage() {
         const status = document.getElementById("status");
-        status.innerText = "Đang chụp ảnh...";
+        status.textContent = "Đang chụp ảnh...";
+        status.className = "status-message loading";
 
         try {
           const response = await fetch("/capture", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
           });
+
           const data = await response.json();
+          status.classList.remove("loading");
 
           if (!response.ok) {
             throw new Error(data.error || `Lỗi HTTP ${response.status}`);
           }
 
-          status.innerText = data.message || "Chụp ảnh thành công";
-          alert("Chụp ảnh thành công: " + data.message);
+          status.textContent = data.message || "Chụp ảnh thành công";
+          status.className = "status-message status-success";
 
           if (data.ocr) {
-            document.getElementById("result_text").innerText =
+            document.getElementById("result_text").textContent =
               data.ocr.text || "-";
-            document.getElementById("qr_text").innerText =
+            document.getElementById("qr_text").textContent =
               data.ocr.qr_data || "Không tìm thấy mã QR";
           }
         } catch (error) {
           console.error("Lỗi khi chụp ảnh:", error);
-          status.innerText = "Lỗi: " + error.message;
+          status.textContent = "Lỗi: " + error.message;
+          status.className = "status-message status-error";
         }
       }
     </script>

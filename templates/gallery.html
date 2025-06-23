@@ -1,35 +1,54 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Gallery</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-        .gallery { display: flex; flex-wrap: wrap; justify-content: center; }
-        .gallery img { width: 200px; height: 150px; margin: 10px; object-fit: cover; border: 1px solid #ccc; }
-        select { margin: 20px; padding: 5px; }
-        a { text-decoration: none; color: blue; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Gallery - Ngày {{ date }}</h1>
-    <form method="GET">
-        <label>Chọn ngày: </label>
-        <select name="date" onchange="this.form.submit()">
-            {% for d in available_dates %}
-                <option value="{{ d }}" {% if d == date %}selected{% endif %}>{{ d }}</option>
-            {% endfor %}
-        </select>
-    </form>
-    <div class="gallery">
-        {% for image in images %}
-            <img src="{{ url_for('get_image', date=date, filename=image) }}" alt="{{ image }}">
-        {% endfor %}
-        {% if not images %}
-            <p>Không có ảnh nào trong ngày {{ date }}</p>
-        {% endif %}
+  <header class="gallery-header">
+    <div class="container">
+      <h1 class="gallery-title">Gallery - Ngày {{ date }}</h1>
     </div>
-    <br>
-    <a href="{{ url_for('index') }}">Quay lại trang chủ</a>
+  </header>
+
+  <main class="container">
+    <form method="GET" class="date-selector">
+      <label for="date">Chọn ngày:</label>
+      <select name="date" id="date" onchange="this.form.submit()">
+        {% for d in available_dates %}
+          <option value="{{ d }}" {% if d == date %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <div class="gallery-grid">
+      {% for image in images %}
+        <div class="gallery-item">
+          <img src="{{ url_for('get_image', date=date, filename=image) }}" 
+               alt="{{ image }}" 
+               class="gallery-image">
+          <div class="image-info">
+            <p class="image-filename">{{ image }}</p>
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% if not images %}
+        <div class="empty-state">
+          <div class="empty-icon">📷</div>
+          <p>Không có ảnh nào trong ngày {{ date }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="text-align: center;">
+      <a href="{{ url_for('index') }}" class="back-button">
+        ← Quay lại trang chủ
+      </a>
+    </div>
+  </main>
 </body>
 </html>

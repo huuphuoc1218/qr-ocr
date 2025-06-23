@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, Response, request, send_from_directory, jsonify
 import cv2
 import os
 import datetime
-import winsound
 import logging
 import time
 import pytesseract
@@ -27,7 +27,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 # Camera RTSP (hoặc webcam để test)
 camera_url = os.getenv('CAMERA_URL', 'rtsp://admin:cctv123456@192.168.88.246/Streaming/Channels/101')
 # Để test với webcam, uncomment dòng dưới và comment dòng trên
-# camera_url = 0
+#camera_url = 2
 cap = None
 
 def init_camera():
@@ -131,8 +131,6 @@ def capture():
             return jsonify({"error": "Không thể lưu ảnh"}), 500
         logging.info(f"Đã lưu ảnh tại {filepath}")
 
-        winsound.Beep(1000, 300)
-
         ocr_result = perform_ocr(filepath)
         logging.info(f"Kết quả OCR: {ocr_result}")
         return jsonify({"message": f"Đã lưu ảnh: {filename}", "ocr": ocr_result}), 200
@@ -226,7 +224,8 @@ if __name__ == '__main__':
     print("Đang khởi động ứng dụng...")
     logging.info("Khởi động server Flask...")
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port=5000, debug=True)
+
     except Exception as e:
         logging.error(f"Lỗi khi chạy server: {e}")
         print(f"Lỗi khi chạy server: {str(e)}")
